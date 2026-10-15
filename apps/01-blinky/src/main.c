@@ -7,7 +7,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/printk.h>
 
-#define SLEEP_TIME_MS 500
+#define SLEEP_TIME_MS 100
 
 /* led0 is a devicetree alias defined by the board's .dts file */
 #define LED0_NODE DT_ALIAS(led0)
