@@ -127,3 +127,34 @@ VS Code + **WSL extension**; run `code .` from inside Ubuntu.
 - [Zephyr Getting Started Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html)
 - [usbipd-win](https://github.com/dorssel/usbipd-win)
 - [Nucleo-F401RE board docs](https://docs.zephyrproject.org/latest/boards/st/nucleo_f401re/doc/index.html)
+
+## Known issue: `west flash` ends with FATAL ERROR (WSL + usbipd)
+
+Every `west flash --runner openocd` ends with:
+
+```
+FATAL ERROR: command exited with status 1: .../openocd ... -c 'reset init'
+  -c 'flash write_image erase .../zephyr.hex' -c 'reset run' -c shutdown
+```
+
+**The flash still succeeds.** Look for this line earlier in the output:
+
+```
+wrote 32768 bytes from file .../zephyr.hex in ~1.0s
+```
+
+If it's there, the new firmware is on the board. The error comes from the final
+`reset run` / `shutdown` step: the chip resets, the ST-LINK briefly drops off the
+USB-over-network link that `usbipd` provides, and OpenOCD reports that as a failure.
+Messages like `communication failure` / `examination failed` at the *start* of the
+next flash are the link still recovering from the previous reset.
+
+**How to confirm a flash worked:** make a visible change (e.g. blink rate) and check
+the board, or check the console output.
+
+**If it ever blocks a flash** (no `wrote ... bytes` line):
+- Unplug/replug the board and rerun `usbipd attach --wsl --busid 1-4 --auto-attach`.
+- Try another runner (e.g. STM32CubeProgrammer, Linux version, installed in WSL).
+
+**Side effect:** flashing resets the ST-LINK, so an open minicom session stops
+showing output. Close minicom before flashing and reopen it after.
