@@ -14,3 +14,9 @@ minicom -D /dev/ttyACM0 -b 115200
 - Change `SLEEP_TIME_MS` and reflash.
 - Open `build/zephyr/zephyr.dts` and find where the `led0` alias points.
 - Look at `build/zephyr/.config` and search for `CONFIG_GPIO`.
+
+## Demo
+
+Console output over the ST-LINK virtual COM port (`minicom -D /dev/ttyACM0 -b 115200`):
+
+![LED ON / LED OFF printed to the serial console](../../notes/media/01-blinky-console.png)
