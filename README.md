@@ -25,8 +25,11 @@ Full steps and reasoning: [notes/01-environment-setup.md](notes/01-environment-s
 zephyr-learning/
 ├── README.md          # this file: overview + progress log
 ├── notes/             # one markdown note per topic, numbered in learning order
-│   └── _template.md   # copy this to start a new note
+│   ├── _template.md   # copy this to start a new note
+│   └── media/         # demo GIFs and screenshots
 └── apps/              # out-of-tree Zephyr applications, one folder per experiment
+    ├── 01-blinky/     # LD2 blink + console output
+    └── 02-devicetree/ # LD2 + external LED on D7 via overlay
 ```
 
 This repo is meant to live **inside** the west workspace, e.g. `~/zephyrproject/zephyr-learning`, so `west build` finds Zephyr automatically.
@@ -39,13 +42,16 @@ west build -p always -b nucleo_f401re apps/01-blinky
 west flash --runner openocd
 ```
 
-Use `-b native_sim` to run an app on the PC instead (only for apps that don't depend on board hardware).
+- All apps share one `build/` folder, so use `-p always` when switching between apps.
+- `west flash` ends with a harmless `FATAL ERROR` under WSL; check for `wrote N bytes`. See [notes/01](notes/01-environment-setup.md#known-issue-west-flash-ends-with-fatal-error-wsl--usbipd).
+- Close minicom before flashing and reopen it after.
+- Use `-b native_sim` to run an app on the PC instead (only for apps that don't depend on board hardware).
 
 ## Roadmap
 
-- [ ] 01 — Environment setup (WSL2, west, SDK, usbipd) → `hello_world` on `native_sim`
-- [ ] 02 — Blinky on hardware; build / flash / console loop
-- [ ] 03 — Devicetree: read the board `.dts`, write an overlay for an external LED
+- [x] 01 — Environment setup (WSL2, west, SDK, usbipd) → `hello_world` on `native_sim`
+- [x] 02 — Blinky on hardware; build / flash / console loop
+- [x] 03 — Devicetree: read the board `.dts`, write an overlay for an external LED
 - [ ] 04 — Kconfig: `prj.conf`, `menuconfig`
 - [ ] 05 — GPIO input: button interrupts and callbacks
 - [ ] 06 — Kernel primitives: threads, semaphores, message queues, work queues, timers
@@ -60,7 +66,9 @@ Newest first. One line per session: what I did, what I learned, where the note i
 
 | Date | What | Notes |
 |---|---|---|
-| 2026-10-14 | Picked board and host setup (Windows → WSL2), created this repo | [01](notes/01-environment-setup.md) |
+| 2026-10-15 | Devicetree: traced `led0` → PA5, `chosen` console → USART2, button active-low on PC13; added external LED on D7 (PA8) with an overlay; first DT error debugged | [02](notes/02-devicetree.md), [app](apps/02-devicetree) |
+| 2026-10-14 | Blinky on hardware: build/flash/console loop working, changed blink rate, documented openocd `FATAL ERROR` quirk | [01](notes/01-environment-setup.md), [app](apps/01-blinky) |
+| 2026-10-14 | Picked board and host setup (Windows → WSL2 + usbipd), created this repo | [01](notes/01-environment-setup.md) |
 
 ## Resources
 
